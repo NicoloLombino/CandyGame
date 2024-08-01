@@ -1,25 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CandyManager : MonoBehaviour
 {
-    [Header("")]
-    [SerializeField]
-    private GameObject candyPrefab;
-    [SerializeField]
-    private LineRenderer candyThrowLine;
-
     [Header("Components")]
     [SerializeField]
+    private Candy[] candySpawnablePrefabs;
+    [SerializeField]
+    private Candy[] allCandyPrefabs;
+    private Candy currentCandy;
+    [SerializeField]
+    private LineRenderer candyThrowLine;
+    [SerializeField]
     private float candySpawnPositionY;
+    [SerializeField]
+    private float spawnTime;
+    [SerializeField]
+    private int nextCandyIndex;
+
+    [Header("UI Components")]
+    [SerializeField]
+    private Image nextCandyImage;
+
+
+    bool canSpawnCandy = false;
 
     void Start()
     {
-        
+        canSpawnCandy = true;
+        CandyMergeManager.onCandyMerge += HandleCandyMerge;
+        SetRandomNextCandy();
     }
 
-    // Update is called once per frame
     void Update()
     {
         ReadInputPC();
@@ -29,24 +43,31 @@ public class CandyManager : MonoBehaviour
     {
         if(Input.GetMouseButtonDown(0))
         {
+            if (!canSpawnCandy) return;
+
+            SpawnRandomCandy();
             ShowThrowLine(true);
-            MoveThrowLine();
+            MoveThrowLineInPressedPosition();
+            SetRandomNextCandy();
         }
         else if(Input.GetMouseButtonUp(0))
         {
-            SpawnCandy();
-            ShowThrowLine(false);
+            ThrowCandy();
         }
         else if(Input.GetMouseButton(0))
         {
-            MoveThrowLine();
+            MoveThrowLineInPressedPosition();
+            if (currentCandy)
+            {
+                currentCandy.MoveCandy(GetTouchedPositionFromSpawnPosition());
+            }
         }
     }
 
-    private void SpawnCandy()
+    private void SpawnRandomCandy()
     {
         Vector2 spawnPosition = GetTouchedPositionFromSpawnPosition();
-        Instantiate(candyPrefab, spawnPosition, Quaternion.identity);
+        currentCandy = Instantiate(candySpawnablePrefabs[nextCandyIndex], spawnPosition, Quaternion.identity);
     }
 
     private void ShowThrowLine(bool show)
@@ -54,7 +75,18 @@ public class CandyManager : MonoBehaviour
         candyThrowLine.enabled = show;
     }
 
-    private void MoveThrowLine()
+    private void ThrowCandy()
+    {
+        if (!currentCandy) return;
+
+        ShowThrowLine(false);
+        currentCandy.EnableRigidbody(true);
+        canSpawnCandy = false;
+        StartCoroutine(SpawnTimer(spawnTime));
+        currentCandy = null;
+    }
+
+    private void MoveThrowLineInPressedPosition()
     {
         Vector2 lineStartPosition = GetTouchedPositionFromSpawnPosition();
         candyThrowLine.SetPosition(0, lineStartPosition);
@@ -66,6 +98,31 @@ public class CandyManager : MonoBehaviour
         Vector2 touchedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         touchedPosition.y = candySpawnPositionY;
         return touchedPosition;
+    }
+
+    private void SetRandomNextCandy()
+    {
+        nextCandyIndex = Random.Range(0, candySpawnablePrefabs.Length);
+        nextCandyImage.sprite = candySpawnablePrefabs[nextCandyIndex].GetCandySprite();
+    }
+
+    private IEnumerator SpawnTimer(float spawnTime)
+    {
+        yield return new WaitForSecondsRealtime(spawnTime);
+        canSpawnCandy = true;
+    }
+
+    private void HandleCandyMerge(Candy.CandyType candyMergedType, Vector2 spawnPosition)
+    {
+        foreach(Candy candy in allCandyPrefabs)
+        {
+            if(candy.candyType == candyMergedType)
+            {
+                Candy mergedCandy = Instantiate(candy, spawnPosition, Quaternion.identity);
+                mergedCandy.EnableRigidbody(true);
+                break;
+            }
+        }
     }
 
     // TO DEBUG
