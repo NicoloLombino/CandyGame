@@ -14,23 +14,39 @@ public class CandyManager : MonoBehaviour
     [SerializeField]
     private LineRenderer candyThrowLine;
     [SerializeField]
+    private int nextCandyIndex;
+
+    [Header("Gameplay")]
+    [SerializeField]
     private float candySpawnPositionY;
     [SerializeField]
     private float spawnTime;
     [SerializeField]
-    private int nextCandyIndex;
+    private LineRenderer gameoverLine;
+    [SerializeField]
+    private float timeToGameover;
 
     [Header("UI Components")]
     [SerializeField]
     private Image nextCandyImage;
 
-
     bool canSpawnCandy = false;
 
+    // static ref
+    public static float gameoverLinePositionY;
+    public static float s_timeToGameover;
+
+    private void Awake()
+    {
+        gameoverLinePositionY = gameoverLine.transform.position.y;
+        s_timeToGameover = timeToGameover;
+    }
     void Start()
     {
         canSpawnCandy = true;
+        Debug.Log(gameoverLinePositionY);
         CandyMergeManager.onCandyMerge += HandleCandyMerge;
+        Candy.onGameoverLine += HandleGameoverTimer;
         SetRandomNextCandy();
     }
 
@@ -45,6 +61,7 @@ public class CandyManager : MonoBehaviour
         {
             if (!canSpawnCandy) return;
 
+            canSpawnCandy = false;
             SpawnRandomCandy();
             ShowThrowLine(true);
             MoveThrowLineInPressedPosition();
@@ -81,7 +98,6 @@ public class CandyManager : MonoBehaviour
 
         ShowThrowLine(false);
         currentCandy.EnableRigidbody(true);
-        canSpawnCandy = false;
         StartCoroutine(SpawnTimer(spawnTime));
         currentCandy = null;
     }
@@ -123,6 +139,16 @@ public class CandyManager : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public void HandleGameoverTimer(bool startTimer)
+    {
+        gameoverLine.gameObject.GetComponent<Animator>().SetBool("Gameover", startTimer);
+    }
+
+    public static void Gameover()
+    {
+        Debug.Log("-----GAMEOVER-----");
     }
 
     // TO DEBUG
