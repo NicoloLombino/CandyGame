@@ -7,17 +7,16 @@ public class Candy : MonoBehaviour
 {
 
     Rigidbody2D rb;
+
     public static Action<Candy, Candy> onCandyCollision;
-    public static Action<bool> onGameoverLine;
 
     public SpriteRenderer candySpriteRenderer;
 
-    float gameoverLinePositionY;
-    float timeToGameover;
-    float gameoverTimer;
-    bool hasCollide;
-    bool isOnGameoverLine;
-    bool hasStartGameoverTimer;
+    private float gameoverLinePositionY;
+    private float timeToGameover;
+    private float gameoverTimer;
+    private bool hasCollide;
+    private bool hasStartGameoverTimer;
 
     public enum CandyType
     {
@@ -40,8 +39,8 @@ public class Candy : MonoBehaviour
 
     void Start()
     {
-        gameoverLinePositionY = CandyManager.gameoverLinePositionY;
-        timeToGameover = CandyManager.s_timeToGameover;
+        gameoverLinePositionY = GameManager.instance.GetGameoverLinePositionY();
+        timeToGameover = GameManager.instance.GetTimeToGameover();
     }
 
     void Update()
@@ -87,14 +86,11 @@ public class Candy : MonoBehaviour
 
     private void ManageGameoverTimer(bool startTimer)
     {
-        isOnGameoverLine = startTimer;
-        onGameoverLine?.Invoke(startTimer);
+        GameManager.instance.HandleGameoverTimer(startTimer);
 
         if (startTimer)
         {
             hasStartGameoverTimer = true;
-            Debug.Log(transform.position.y);
-
         }
         else
         {
@@ -108,7 +104,7 @@ public class Candy : MonoBehaviour
         gameoverTimer += Time.deltaTime;
         if(gameoverTimer >= timeToGameover)
         {
-            CandyManager.Gameover();
+            GameManager.instance.SetGameover();
         }
 
         if(!IsOnGameoverLine())
@@ -117,15 +113,21 @@ public class Candy : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void HandleCollision(Collision2D collision)
     {
         hasCollide = true;
+
         if (collision.collider.TryGetComponent(out Candy collisionCandy))
         {
-            if(collisionCandy.candyType == this.candyType)
+            if (collisionCandy.candyType == this.candyType)
             {
                 onCandyCollision?.Invoke(this, collisionCandy);
             }
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        HandleCollision(collision);
     }
 }

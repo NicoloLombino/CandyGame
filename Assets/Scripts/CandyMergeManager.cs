@@ -14,7 +14,6 @@ public class CandyMergeManager : MonoBehaviour
         Candy.onCandyCollision += HandleCandyCollision;
     }
 
-    // Update is called once per frame
     void Update()
     {
         

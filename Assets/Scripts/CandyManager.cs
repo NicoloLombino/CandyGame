@@ -21,10 +21,6 @@ public class CandyManager : MonoBehaviour
     private float candySpawnPositionY;
     [SerializeField]
     private float spawnTime;
-    [SerializeField]
-    private LineRenderer gameoverLine;
-    [SerializeField]
-    private float timeToGameover;
 
     [Header("UI Components")]
     [SerializeField]
@@ -32,27 +28,24 @@ public class CandyManager : MonoBehaviour
 
     bool canSpawnCandy = false;
 
-    // static ref
-    public static float gameoverLinePositionY;
-    public static float s_timeToGameover;
 
     private void Awake()
     {
-        gameoverLinePositionY = gameoverLine.transform.position.y;
-        s_timeToGameover = timeToGameover;
+
     }
     void Start()
     {
         canSpawnCandy = true;
-        Debug.Log(gameoverLinePositionY);
         CandyMergeManager.onCandyMerge += HandleCandyMerge;
-        Candy.onGameoverLine += HandleGameoverTimer;
         SetRandomNextCandy();
     }
 
     void Update()
     {
-        ReadInputPC();
+        if(GameManager.instance.gameState == GameManager.GameState.Game)
+        {
+            ReadInputPC();
+        }
     }
 
     private void ReadInputPC()
@@ -139,16 +132,6 @@ public class CandyManager : MonoBehaviour
                 break;
             }
         }
-    }
-
-    public void HandleGameoverTimer(bool startTimer)
-    {
-        gameoverLine.gameObject.GetComponent<Animator>().SetBool("Gameover", startTimer);
-    }
-
-    public static void Gameover()
-    {
-        Debug.Log("-----GAMEOVER-----");
     }
 
     // TO DEBUG
