@@ -5,7 +5,9 @@ using System;
 
 public class Candy : MonoBehaviour
 {
-
+    [Header("Gameplay")]
+    [SerializeField]
+    private int scoreOnCollision;
     Rigidbody2D rb;
 
     public static Action<Candy, Candy> onCandyCollision;
@@ -122,6 +124,7 @@ public class Candy : MonoBehaviour
             if (collisionCandy.candyType == this.candyType)
             {
                 onCandyCollision?.Invoke(this, collisionCandy);
+                GameManager.instance.AddScore(scoreOnCollision);
             }
         }
     }

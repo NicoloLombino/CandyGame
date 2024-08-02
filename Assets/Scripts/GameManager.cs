@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,12 +17,16 @@ public class GameManager : MonoBehaviour
     private GameObject inGameUI;
     [SerializeField]
     private GameObject gameoverUI;
+    [SerializeField]
+    private TextMeshProUGUI scoreText;
 
     [Header("Gameover")]
     [SerializeField]
     private LineRenderer gameoverLine;
     [SerializeField]
     private float timeToGameover;
+
+    private int score;
 
     public enum GameState
     {
@@ -93,5 +98,11 @@ public class GameManager : MonoBehaviour
     public void ReloadScene()
     {
         SceneManager.LoadScene(0, LoadSceneMode.Single);
+    }
+
+    public void AddScore(int scoreToAdd)
+    {
+        score += scoreToAdd;
+        scoreText.text = "Score: \n" + score;
     }
 }

@@ -85,6 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05a6827d422fe28439c17f34cf3c3e40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scoreOnCollision: 40
   candySpriteRenderer: {fileID: 5046138329228283939}
   candyType: 3
 --- !u!95 &1418037342416455597
