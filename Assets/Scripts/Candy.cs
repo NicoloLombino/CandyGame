@@ -10,6 +10,16 @@ public class Candy : MonoBehaviour
     private int scoreOnCollision;
     Rigidbody2D rb;
 
+    [Header("Gameplay")]
+    [SerializeField]
+    private Sprite spriteCandy;
+    [SerializeField]
+    private Sprite spriteLollipop;
+    [SerializeField]
+    private Sprite spriteCake;
+    [SerializeField]
+    private Sprite spriteIceCream;
+
     public static Action<Candy, Candy> onCandyCollision;
 
     public SpriteRenderer candySpriteRenderer;
@@ -41,8 +51,11 @@ public class Candy : MonoBehaviour
 
     void Start()
     {
+        GameManager.instance.OnDifficoultyIncreased += HandleDifficultyIncreased;
         gameoverLinePositionY = GameManager.instance.GetGameoverLinePositionY();
         timeToGameover = GameManager.instance.GetTimeToGameover();
+
+        SetSpriteMode(PlayerPrefs.GetInt("CandySpriteMode"));
     }
 
     void Update()
@@ -113,6 +126,33 @@ public class Candy : MonoBehaviour
         {
             ManageGameoverTimer(false);
         }
+    }
+
+    public void SetSpriteMode(int spriteMode)
+    {
+        switch(spriteMode)
+        {
+            case 0:
+                candySpriteRenderer.sprite = spriteCandy;
+                break;
+            case 1:
+                candySpriteRenderer.sprite = spriteLollipop;
+                break;
+            case 2:
+                candySpriteRenderer.sprite = spriteCake;
+                break;
+            case 3:
+                candySpriteRenderer.sprite = spriteIceCream;
+                break;
+        }
+
+        PlayerPrefs.SetInt("CandySpriteMode", spriteMode);
+    }
+
+    private void HandleDifficultyIncreased()
+    {
+        gameoverLinePositionY = GameManager.instance.GetGameoverLinePositionY();
+        Debug.Log("CHIAMATO");
     }
 
     private void HandleCollision(Collision2D collision)

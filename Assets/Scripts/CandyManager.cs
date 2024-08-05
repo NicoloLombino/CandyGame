@@ -134,6 +134,15 @@ public class CandyManager : MonoBehaviour
         }
     }
 
+
+    public void SetCandySpriteMode(int spriteMode)
+    {
+        foreach(Candy candy in allCandyPrefabs)
+        {
+            candy.SetSpriteMode(spriteMode);
+        }
+    }
+
     // TO DEBUG
     private void OnDrawGizmos()
     {

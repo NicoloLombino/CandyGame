@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System;
 
 public class GameManager : MonoBehaviour
 {
 
     public static GameManager instance;
-    
+
+    [Header("Gameplay")]
+    [SerializeField]
+    private int scoreToIncreaseDifficulty;
 
     [Header("UI Components")]
     [SerializeField]
@@ -19,6 +23,8 @@ public class GameManager : MonoBehaviour
     private GameObject gameoverUI;
     [SerializeField]
     private TextMeshProUGUI scoreText;
+    [SerializeField]
+    private GameObject newBestScoreUI;
 
     [Header("Gameover")]
     [SerializeField]
@@ -26,7 +32,13 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private float timeToGameover;
 
-    private int score;
+    [Header("To Be Saved")]
+    [SerializeField]
+    private TextMeshProUGUI bestScoreText;
+
+    private int currentScore;
+
+    public Action OnDifficoultyIncreased;
 
     public enum GameState
     {
@@ -64,6 +76,7 @@ public class GameManager : MonoBehaviour
         menuUI.SetActive(true);
         inGameUI.SetActive(false);
         gameoverUI.SetActive(false);
+        bestScoreText.text = "Best Score: \n" + PlayerPrefs.GetInt("BestScore");
     }
 
     public void SetGame()
@@ -79,6 +92,7 @@ public class GameManager : MonoBehaviour
         menuUI.SetActive(false);
         inGameUI.SetActive(false);
         gameoverUI.SetActive(true);
+        CheckForBestScore();
     }
 
     public void HandleGameoverTimer(bool startTimer)
@@ -102,7 +116,30 @@ public class GameManager : MonoBehaviour
 
     public void AddScore(int scoreToAdd)
     {
-        score += scoreToAdd;
-        scoreText.text = "Score: \n" + score;
+        currentScore += scoreToAdd;
+        scoreText.text = "Score: \n" + currentScore;
+
+        if(currentScore >= scoreToIncreaseDifficulty && GetGameoverLinePositionY() > 1.5f)
+        {
+            float positionToGive = GetGameoverLinePositionY() - 1.0f;
+            positionToGive = Mathf.Max(positionToGive, 1.5f);
+            gameoverLine.transform.position = new Vector3(0, positionToGive, 0);
+            scoreToIncreaseDifficulty *= 2;
+            OnDifficoultyIncreased?.Invoke();
+        }
+    }
+
+    private void CheckForBestScore()
+    {
+        if(currentScore >= PlayerPrefs.GetInt("BestScore"))
+        {
+            PlayerPrefs.SetInt("BestScore", currentScore);
+            newBestScoreUI.SetActive(true);
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        
     }
 }

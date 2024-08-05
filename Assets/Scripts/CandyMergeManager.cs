@@ -5,6 +5,9 @@ using System;
 
 public class CandyMergeManager : MonoBehaviour
 {
+    [SerializeField]
+    private SoundManager SoundManager;
+
     Candy lastCandyCaller;
 
     public static Action<Candy.CandyType, Vector2> onCandyMerge;
@@ -39,6 +42,7 @@ public class CandyMergeManager : MonoBehaviour
     {
         Destroy(candy1.gameObject);
         Destroy(candy2.gameObject);
+        SoundManager.PlayRandomPopSound();
         StartCoroutine(ResetLastCandyCaller());
     }
 
