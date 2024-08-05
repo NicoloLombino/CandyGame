@@ -31,7 +31,10 @@ public class SoundManager : MonoBehaviour
 
     public void PlayRandomPopSound()
     {
-        audioSource.PlayOneShot(PopSounds[Random.Range(0, PopSounds.Length)]);
+        if(audioSource)
+        {
+            audioSource.PlayOneShot(PopSounds[Random.Range(0, PopSounds.Length)]);
+        }
     }
 
     public void PlayEffectSound()

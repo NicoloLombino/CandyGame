@@ -42,7 +42,7 @@ public class CandyManager : MonoBehaviour
 
     void Update()
     {
-        if(GameManager.instance.gameState == GameManager.GameState.Game)
+        if (GameManager.instance.gameState == GameManager.GameState.Game)
         {
             ReadInputPC();
         }

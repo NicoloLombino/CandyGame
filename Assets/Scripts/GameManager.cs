@@ -114,6 +114,17 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(0, LoadSceneMode.Single);
     }
 
+    public void ReturnToMenu()
+    {
+        newBestScoreUI.SetActive(false);
+        Candy[] allCandies = FindObjectsOfType<Candy>();
+        foreach (Candy candy in allCandies)
+        {
+            Destroy(candy.gameObject);
+        }
+        SetMenu();
+    }
+
     public void AddScore(int scoreToAdd)
     {
         currentScore += scoreToAdd;

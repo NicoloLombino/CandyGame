@@ -52,6 +52,7 @@ public class Candy : MonoBehaviour
     void Start()
     {
         GameManager.instance.OnDifficoultyIncreased += HandleDifficultyIncreased;
+
         gameoverLinePositionY = GameManager.instance.GetGameoverLinePositionY();
         timeToGameover = GameManager.instance.GetTimeToGameover();
 
@@ -152,7 +153,6 @@ public class Candy : MonoBehaviour
     private void HandleDifficultyIncreased()
     {
         gameoverLinePositionY = GameManager.instance.GetGameoverLinePositionY();
-        Debug.Log("CHIAMATO");
     }
 
     private void HandleCollision(Collision2D collision)
