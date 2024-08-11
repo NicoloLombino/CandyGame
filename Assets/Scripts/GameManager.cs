@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System;
@@ -13,6 +14,7 @@ public class GameManager : MonoBehaviour
     [Header("Gameplay")]
     [SerializeField]
     private int scoreToIncreaseDifficulty;
+    public bool freeMode;
 
     [Header("UI Components")]
     [SerializeField]
@@ -25,6 +27,8 @@ public class GameManager : MonoBehaviour
     private TextMeshProUGUI scoreText;
     [SerializeField]
     private GameObject newBestScoreUI;
+    [SerializeField]
+    private Toggle freeModeToggle;
 
     [Header("Gameover")]
     [SerializeField]
@@ -63,11 +67,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetMenu();
-    }
-
-    void Update()
-    {
-        
+        LoadSave();
     }
 
     public void SetMenu()
@@ -130,7 +130,7 @@ public class GameManager : MonoBehaviour
         currentScore += scoreToAdd;
         scoreText.text = "Score: \n" + currentScore;
 
-        if(currentScore >= scoreToIncreaseDifficulty && GetGameoverLinePositionY() > 1.5f)
+        if(!freeMode && currentScore >= scoreToIncreaseDifficulty && GetGameoverLinePositionY() > 1.5f)
         {
             float positionToGive = GetGameoverLinePositionY() - 1.0f;
             positionToGive = Mathf.Max(positionToGive, 1.5f);
@@ -147,6 +147,32 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("BestScore", currentScore);
             newBestScoreUI.SetActive(true);
         }
+    }
+
+    public void ToggleFreeMode()
+    {
+        freeMode = !freeMode;
+    }
+
+    private void LoadSave()
+    {
+        Debug.Log(PlayerPrefs.GetInt("FreeModeActive"));
+
+        freeMode = PlayerPrefs.GetInt("FreeModeActive") == 1 ? true : false;
+
+        Debug.Log(PlayerPrefs.GetInt("FreeModeActive"));
+
+        freeModeToggle.isOn = freeMode;
+
+        // to be sure
+        freeMode = PlayerPrefs.GetInt("FreeModeActive") == 1 ? true : false;
+        Debug.Log(PlayerPrefs.GetInt("FreeModeActive"));
+
+    }
+
+    public void HandleCloseSettingsMenu()
+    {
+        PlayerPrefs.SetInt("FreeModeActive", freeMode ? 1 : 0);
     }
 
     private void OnApplicationQuit()

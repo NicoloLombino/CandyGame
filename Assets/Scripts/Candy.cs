@@ -5,12 +5,14 @@ using System;
 
 public class Candy : MonoBehaviour
 {
+    Rigidbody2D rb;
+    CircleCollider2D circleCollider2D;
+
     [Header("Gameplay")]
     [SerializeField]
     private int scoreOnCollision;
-    Rigidbody2D rb;
 
-    [Header("Gameplay")]
+    [Header("Components")]
     [SerializeField]
     private Sprite spriteCandy;
     [SerializeField]
@@ -19,6 +21,7 @@ public class Candy : MonoBehaviour
     private Sprite spriteCake;
     [SerializeField]
     private Sprite spriteIceCream;
+    public GameObject mergeParticles;
 
     public static Action<Candy, Candy> onCandyCollision;
 
@@ -46,7 +49,7 @@ public class Candy : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-
+        circleCollider2D = GetComponent<CircleCollider2D>();
     }
 
     void Start()
@@ -83,6 +86,11 @@ public class Candy : MonoBehaviour
     public void EnableRigidbody(bool enable)
     {
         rb.bodyType = enable? RigidbodyType2D.Dynamic : RigidbodyType2D.Kinematic;
+    }
+
+    public void EnableCollider(bool enable)
+    {
+        circleCollider2D.enabled = enable;
     }
 
     public void MoveCandy(Vector2 movePosition)
@@ -157,10 +165,14 @@ public class Candy : MonoBehaviour
 
     private void HandleCollision(Collision2D collision)
     {
-        hasCollide = true;
+        if(collision.gameObject.tag == "Floor")
+        {
+            hasCollide = true;
+        }
 
         if (collision.collider.TryGetComponent(out Candy collisionCandy))
         {
+            hasCollide = true;
             if (collisionCandy.candyType == this.candyType)
             {
                 onCandyCollision?.Invoke(this, collisionCandy);

@@ -22,9 +22,19 @@ public class CandyManager : MonoBehaviour
     [SerializeField]
     private float spawnTime;
 
+    [Header("MergePush")]
+    [SerializeField]
+    private bool mergePushForceActive;
+    [SerializeField]
+    private float mergeRadius;
+    [SerializeField]
+    private float pushForce;
+
     [Header("UI Components")]
     [SerializeField]
     private Image nextCandyImage;
+    [SerializeField]
+    private Toggle pushForceToggle;
 
     bool canSpawnCandy = false;
 
@@ -36,8 +46,9 @@ public class CandyManager : MonoBehaviour
     void Start()
     {
         canSpawnCandy = true;
+        LoadSave();
+
         CandyMergeManager.onCandyMerge += HandleCandyMerge;
-        SetRandomNextCandy();
     }
 
     void Update()
@@ -91,7 +102,9 @@ public class CandyManager : MonoBehaviour
 
         ShowThrowLine(false);
         currentCandy.EnableRigidbody(true);
+        currentCandy.EnableCollider(true);
         StartCoroutine(SpawnTimer(spawnTime));
+
         currentCandy = null;
     }
 
@@ -109,7 +122,7 @@ public class CandyManager : MonoBehaviour
         return touchedPosition;
     }
 
-    private void SetRandomNextCandy()
+    public void SetRandomNextCandy()
     {
         nextCandyIndex = Random.Range(0, candySpawnablePrefabs.Length);
         nextCandyImage.sprite = candySpawnablePrefabs[nextCandyIndex].GetCandySprite();
@@ -123,15 +136,46 @@ public class CandyManager : MonoBehaviour
 
     private void HandleCandyMerge(Candy.CandyType candyMergedType, Vector2 spawnPosition)
     {
-        foreach(Candy candy in allCandyPrefabs)
+        if(mergePushForceActive)
+        {
+            MakeMergePushForce(spawnPosition);
+        }
+
+        foreach (Candy candy in allCandyPrefabs)
         {
             if(candy.candyType == candyMergedType)
             {
                 Candy mergedCandy = Instantiate(candy, spawnPosition, Quaternion.identity);
                 mergedCandy.EnableRigidbody(true);
+                mergedCandy.EnableCollider(true);
                 break;
             }
         }
+    }
+
+    private void MakeMergePushForce(Vector2 pushPosition)
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(pushPosition, mergeRadius);
+
+        foreach(Collider2D col in colliders)
+        {
+            if(col.TryGetComponent(out Candy candy))
+            {
+                Vector2 push = ((Vector2)candy.transform.position - pushPosition).normalized;
+                push *= pushForce;
+                candy.GetComponent<Rigidbody2D>().AddForce(push);
+            }
+        }
+    }
+
+    public void TogglePushForce()
+    {
+        mergePushForceActive = !mergePushForceActive;
+    }
+
+    public void HandleCloseSettingsMenu()
+    {
+        PlayerPrefs.SetInt("PushForceActive", mergePushForceActive ? 1 : 0);
     }
 
 
@@ -141,6 +185,15 @@ public class CandyManager : MonoBehaviour
         {
             candy.SetSpriteMode(spriteMode);
         }
+    }
+
+    private void LoadSave()
+    {
+        mergePushForceActive = PlayerPrefs.GetInt("PushForceActive") == 1 ? true : false;
+        pushForceToggle.isOn = mergePushForceActive;
+
+        // to be sure
+        mergePushForceActive = PlayerPrefs.GetInt("PushForceActive") == 1 ? true : false;
     }
 
     // TO DEBUG

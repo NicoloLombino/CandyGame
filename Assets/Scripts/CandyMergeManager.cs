@@ -35,6 +35,7 @@ public class CandyMergeManager : MonoBehaviour
         onCandyMerge?.Invoke(candyCallerType, candySpawnPosition);
 
         lastCandyCaller = candyCaller;
+        Instantiate(candyCaller.mergeParticles, candySpawnPosition, Quaternion.identity);
         MergeCandy(candyCaller, collisionCandy);
     }
 

@@ -17,7 +17,6 @@ public class SoundManager : MonoBehaviour
     [SerializeField]
     private Slider SliderVolume;
 
-
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
