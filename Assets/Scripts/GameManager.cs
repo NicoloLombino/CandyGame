@@ -40,6 +40,12 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI bestScoreText;
 
+    [Header("Fix Walls")]
+    [SerializeField]
+    private Transform leftWall;
+    [SerializeField]
+    private Transform rightWall;
+
     private int currentScore;
 
     public Action OnDifficoultyIncreased;
@@ -68,6 +74,7 @@ public class GameManager : MonoBehaviour
     {
         SetMenu();
         LoadSave();
+        //FixWallTransform();
     }
 
     public void SetMenu()
@@ -173,6 +180,18 @@ public class GameManager : MonoBehaviour
     public void HandleCloseSettingsMenu()
     {
         PlayerPrefs.SetInt("FreeModeActive", freeMode ? 1 : 0);
+    }
+
+    private void FixWallTransform()
+    {
+        float screenRatio = (float)Screen.height / Screen.width;
+        Camera camera = Camera.main;
+
+        float halfScreenWidth = camera.orthographicSize / screenRatio;
+
+        float halfWallSize = rightWall.transform.position.x / 2;
+        rightWall.transform.position = new Vector3(halfScreenWidth + halfWallSize, 0, 0);
+        leftWall.transform.position = -rightWall.transform.position;
     }
 
     private void OnApplicationQuit()
