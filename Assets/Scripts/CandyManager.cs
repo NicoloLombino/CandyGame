@@ -41,12 +41,13 @@ public class CandyManager : MonoBehaviour
 
     private void Awake()
     {
-
     }
     void Start()
     {
         canSpawnCandy = true;
         LoadSave();
+        Invoke("SetRandomNextCandy", 0.2f);
+        Debug.Log(GameManager.instance.FIX_SPRITE_NEXT_CANDY);
 
         CandyMergeManager.onCandyMerge += HandleCandyMerge;
     }
@@ -125,7 +126,8 @@ public class CandyManager : MonoBehaviour
     public void SetRandomNextCandy()
     {
         nextCandyIndex = Random.Range(0, candySpawnablePrefabs.Length);
-        nextCandyImage.sprite = candySpawnablePrefabs[nextCandyIndex].GetCandySprite();
+        //nextCandyImage.sprite = candySpawnablePrefabs[nextCandyIndex].GetCandySprite();
+        nextCandyImage.sprite = candySpawnablePrefabs[nextCandyIndex].Fix_SpriteNextCandy();
     }
 
     private IEnumerator SpawnTimer(float spawnTime)

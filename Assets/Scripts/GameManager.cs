@@ -50,6 +50,8 @@ public class GameManager : MonoBehaviour
 
     public Action OnDifficoultyIncreased;
 
+    internal int FIX_SPRITE_NEXT_CANDY;
+
     public enum GameState
     {
         Game,
@@ -74,6 +76,7 @@ public class GameManager : MonoBehaviour
     {
         SetMenu();
         LoadSave();
+        FIX_SPRITE_NEXT_CANDY = PlayerPrefs.GetInt("CandySpriteMode", 0);
         //FixWallTransform();
     }
 
@@ -163,18 +166,12 @@ public class GameManager : MonoBehaviour
 
     private void LoadSave()
     {
-        Debug.Log(PlayerPrefs.GetInt("FreeModeActive"));
-
         freeMode = PlayerPrefs.GetInt("FreeModeActive") == 1 ? true : false;
-
-        Debug.Log(PlayerPrefs.GetInt("FreeModeActive"));
 
         freeModeToggle.isOn = freeMode;
 
         // to be sure
         freeMode = PlayerPrefs.GetInt("FreeModeActive") == 1 ? true : false;
-        Debug.Log(PlayerPrefs.GetInt("FreeModeActive"));
-
     }
 
     public void HandleCloseSettingsMenu()

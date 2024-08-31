@@ -59,7 +59,7 @@ public class Candy : MonoBehaviour
         gameoverLinePositionY = GameManager.instance.GetGameoverLinePositionY();
         timeToGameover = GameManager.instance.GetTimeToGameover();
 
-        SetSpriteMode(PlayerPrefs.GetInt("CandySpriteMode"));
+        SetSpriteMode(PlayerPrefs.GetInt("CandySpriteMode", 0));
     }
 
     void Update()
@@ -103,6 +103,29 @@ public class Candy : MonoBehaviour
         return candySpriteRenderer.sprite;
     }
 
+    public Sprite Fix_SpriteNextCandy()
+    {
+        Sprite tempSprite = null;
+        switch (GameManager.instance.FIX_SPRITE_NEXT_CANDY)
+        {
+            case 0:
+                tempSprite = spriteCandy;
+                break;
+            case 1:
+                tempSprite = spriteLollipop;
+                break;
+            case 2:
+                tempSprite = spriteCake;
+                break;
+            case 3:
+                tempSprite = spriteIceCream;
+                break;
+        }
+
+        Debug.Log(GameManager.instance.FIX_SPRITE_NEXT_CANDY);
+        return tempSprite;
+    }
+
     private bool IsOnGameoverLine()
     {
         return transform.position.y >= gameoverLinePositionY;
@@ -139,7 +162,9 @@ public class Candy : MonoBehaviour
 
     public void SetSpriteMode(int spriteMode)
     {
-        switch(spriteMode)
+        GameManager.instance.FIX_SPRITE_NEXT_CANDY = spriteMode;
+
+        switch (spriteMode)
         {
             case 0:
                 candySpriteRenderer.sprite = spriteCandy;
